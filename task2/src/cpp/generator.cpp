@@ -1,6 +1,10 @@
 #include "generator.h"
 
-// Gen data
+// GenData - function for generating signal
+/* 
+    [out] out_data - output data
+    return void
+*/
 void Generator::GenData(std::vector<int16_t>& out_data)
 {
     uint32_t N = out_data.size();
@@ -17,7 +21,11 @@ void Generator::GenData(std::vector<int16_t>& out_data)
     return;
 };
 
-// Set phase
+// SetPhase - function for setting phase value
+/*
+    [in] phase - value of phase to set
+    return void
+*/
 void Generator::SetPhase(double phase)
 {
     m_phase = phase;
