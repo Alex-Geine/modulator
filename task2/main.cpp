@@ -1,20 +1,21 @@
-#include <fstream>
 #include "generator.h"
+#include "file_writer.h"
 
 int main()
 {
-    std::ofstream file("gen_data.txt");
+    std::vector<int16_t> data;          // Data from generator
+    std::vector<double>  time_p;        // Time points data
 
-    std::vector<int16_t> data;
-    std::vector<double>  time_p;
-
-    double   freq        = 110;
-    double   sample_freq = 1000;
-    uint64_t N           = 1000;
+    double   freq        = 110;         // Frequency of signal
+    double   sample_freq = 1000;        // Sample frequensy of signal
+    uint64_t N           = 1000;        // Number of points
     double   phase       = 0;           // Phase of generated signal in 
 
     data.resize(N);
     time_p.resize(N);
+
+    for(uint64_t i = 0; i < N; ++i)
+        time_p[i] = i;
 
     std::cout << "Type freq, sample_freq, phase (deg), N:" << std::endl;
     std::cin >> freq >> sample_freq >> phase >> N;
@@ -22,16 +23,15 @@ int main()
     // Convert into radians
     phase = pi2 /  360.;
 
+    // Generate data
+
     Generator gen(freq, sample_freq);
 
     gen.SetPhase(phase);
     gen.GenData(data);
 
-    for(uint64_t i = 0; i < N; ++i)
-        time_p[i] = i;
-
-    for (uint64_t i = 0; i < N; ++i)
-        file << time_p[i] << " " << data[i] << "\n";
+    // Write to file
+    writeToFile(time_p, data, "gen_data.txt");    
 
     return 0;
 }

@@ -6,4 +6,10 @@
 #include <cmath>
 #include <cstdint>
 
+// Class of filter model
+//class Filter
+//{
+
+//};
+
 #endif // _FILTER_H_
