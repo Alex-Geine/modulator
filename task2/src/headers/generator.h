@@ -19,13 +19,13 @@ class Generator
 
     double m_phase       = 0;   // Initial phase
     double m_freq        = 0;   // Signal frequency
-    double m_sample_freq = 0;   // Sample freqyency
+    double m_sample_rate = 0;   // Sample rate
     double m_volume      = 1;   // Level of signal amplitude
 
     public:
 
     // Constructor
-    Generator(double freq = 110, double sample_freq = 1000): m_freq(freq), m_sample_freq(sample_freq){};
+    Generator(double freq = 110, double sample_rate = 1000): m_freq(freq), m_sample_rate(sample_rate){};
 
     // GenData - function for generating signal
     void GenData(std::vector<int16_t>& out_data);

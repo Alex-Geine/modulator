@@ -9,5 +9,5 @@ set xrange[0:]
 set xzeroaxis
 set yzeroaxis
 
-set output 'out.png'
-plot "build/data.txt" using 1:2 with lines
+set output 'receive_data_1.png'
+plot "build/receive_data_1.txt" using 1:2 with lines

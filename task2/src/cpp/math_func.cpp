@@ -1,4 +1,5 @@
 #include "math_func.h"
+#include <iostream>
 
 #define  NUMBER_IS_2_POW_K(x)   ((!((x)&((x)-1)))&&((x)>1))  // x is pow(2, k), k=1,2, ...
 
@@ -12,6 +13,8 @@ bool g_fft(std::vector<std::complex<double>>& data, bool flag)
     // Prepare data
     uint64_t logN = std::log2(data.size());
     uint64_t size = data.size();
+
+    std::cout << "size: " << size << std::endl;
 
     // Parameters error check:
     if ((size > 16384) || (size < 1))                      return false;

@@ -8,7 +8,7 @@
 void Generator::GenData(std::vector<int16_t>& out_data)
 {
     uint32_t N = out_data.size();
-    double d_phase = m_freq * pi2 / m_sample_freq;
+    double d_phase = m_freq * pi2 / m_sample_rate;
 
     for(uint64_t i = 0; i < N; i++)
     {

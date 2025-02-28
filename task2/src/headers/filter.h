@@ -7,6 +7,7 @@
 #include <cstdint>
 
 #include "math_func.h"
+#include "file_writer.h"
 
 typedef std::vector<std::complex<double>> cmplx;
 
@@ -107,9 +108,34 @@ class Filter
 
         start_id = m_cut_freq / d_f;
 
+        std::cout << "d_f: " << d_f << std::endl;
+        std::cout << "start_id: " << start_id << std::endl;
+
+        // output spectre
+        std::vector<double> ampl;
+        std::vector<double> x;
+        ampl.resize(temp_data.size());
+        x.resize(temp_data.size());
+
+        for (uint64_t i = 0; i < temp_data.size(); ++i)
+        {
+            x[i] = i;
+            ampl[i] = std::abs(temp_data[i]);
+        }
+
+        writeToFile(x, ampl, "spectre.txt");
+
         // Filtering spectrum
         for (uint64_t i = start_id; i < temp_data.size(); ++i)
             temp_data[i] = {0., 0.};
+
+        for (uint64_t i = 0; i < temp_data.size(); ++i)
+        {
+            x[i] = i;
+            ampl[i] = std::abs(temp_data[i]);
+        }
+    
+        writeToFile(x, ampl, "spectre_filt.txt");
 
         // Use FFT^-1 on filtered spectrum
         if (!g_fft(temp_data, INVERSE))
