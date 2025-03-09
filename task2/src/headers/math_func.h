@@ -3,6 +3,7 @@
 
 #include <complex>
 #include <vector>
+#include <cstdint>
 
 #define DIRECT  true
 #define INVERSE false

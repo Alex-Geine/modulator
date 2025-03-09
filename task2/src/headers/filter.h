@@ -108,8 +108,8 @@ class Filter
 
         start_id = m_cut_freq / d_f;
 
-        std::cout << "d_f: " << d_f << std::endl;
-        std::cout << "start_id: " << start_id << std::endl;
+        //std::cout << "d_f: " << d_f << std::endl;
+        //std::cout << "start_id: " << start_id << std::endl;
 
         // output spectre
         std::vector<double> ampl;

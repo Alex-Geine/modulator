@@ -14,7 +14,7 @@ bool g_fft(std::vector<std::complex<double>>& data, bool flag)
     uint64_t logN = std::log2(data.size());
     uint64_t size = data.size();
 
-    std::cout << "size: " << size << std::endl;
+    //std::cout << "size: " << size << std::endl;
 
     // Parameters error check:
     if ((size > 16384) || (size < 1))                      return false;

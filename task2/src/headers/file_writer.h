@@ -5,6 +5,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <cstdint>
 
 // function for writing data in file
 /*

@@ -1,0 +1,13 @@
+set xlabel "Фаза [рад]"
+set ylabel "Ошибка [папуга]"
+
+set terminal png size 1024,1024
+
+set xrange[0:]
+
+
+set xzeroaxis
+set yzeroaxis
+
+set output 'error_data.png'
+plot "build/error_data.txt" using 1:2 with lines
