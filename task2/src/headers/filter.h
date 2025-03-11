@@ -47,6 +47,19 @@ class Filter
         return;
     }
 
+    // 2f0sin(2Pif0t)/(2Pif0t), f0 - cutoff freq
+    double sinc(double t)
+    {
+        if (t != 0)
+            return 2 * sin(M_PI * 2 * m_cut_freq * t) / M_PI / 2 / t;
+        
+        return 1;
+    };
+
+
+
+
+
     // ConvertOut - convert input data fucntion
     /*
         [in]  data_in  - input complex data to convert
@@ -65,6 +78,41 @@ class Filter
     }
 
     public:
+
+    template<typename DATA_TYPE>
+    void convolution(const std::vector<DATA_TYPE>& data_signal, const std::vector<DATA_TYPE>& data_filter, std::vector<DATA_TYPE>& out_data)
+    {
+        uint32_t size = data_signal.size();
+        int32_t id_filter = 0;
+
+        for (uint32_t i = 0; i < size; ++i)
+        {
+            for (uint32_t j = 0; j <= i; ++j)
+            {
+                if (size - 1 - j >= 0)
+                    out_data[i] += data_signal[j] * data_filter[size - 1 - j];
+            }
+        }
+
+        return;
+    }
+
+    template<typename DATA_TYPE>
+    void gen_filter(std::vector<DATA_TYPE>& filter_data)
+    {
+        uint32_t size = filter_data.size();
+
+        double T = 1 / m_sample_rate;
+        double t = 0;
+
+        for (uint32_t i = 0; i < size; ++i)
+        {
+            filter_data[i] = sinc(t);
+            t += T;
+        }
+
+        return;
+    }
 
     // Constructor
     /*
@@ -148,7 +196,20 @@ class Filter
         ConvertOut(temp_data, data_out);
         
         return;
-    }    
+    }
+    
+    template<typename DATA_TYPE>
+    void Process_v2(const std::vector<DATA_TYPE>& data_in, std::vector<DATA_TYPE>& data_out)
+    {
+        // create sinc low-pass filter impulse characteristic
+        uint32_t size = data_in.size();
+        std::vector<DATA_TYPE> filter_data(size);
+
+        // create sinc low-pass filter impulse characteristic
+        convolution(data_in, filter_data, data_out);
+
+        return;
+    }
 };
 
 #endif // _FILTER_H_

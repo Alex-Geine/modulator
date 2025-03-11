@@ -56,6 +56,16 @@ int main()
 
     Generator gen(freq, sample_rate);
     Receiver receiver(freq, sample_rate);
+    Filter filter(1.5 * freq, sample_rate);
+
+    std::vector<double> filter_data_1(N);
+    std::vector<double> rect_1(N, 1);
+    std::vector<double> res(N);
+    filter.gen_filter(filter_data_1);
+    filter.convolution(rect_1, rect_1, res);
+
+    writeToFile(time_p, filter_data_1, "receive_data_1.txt");
+    writeToFile(time_p, res, "receive_data_2.txt");
 
     std::vector<double> error_data;
     std::vector<double> error_ids(num_steps);
