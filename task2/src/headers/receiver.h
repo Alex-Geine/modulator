@@ -9,10 +9,10 @@ class Receiver
 {
     private:
 
-    Filter*    m_filter      = nullptr;    // Filter model
-    Generator* m_generator   = nullptr;    // Generator model
-    double     m_freq        = 0;          // Signal frequency
-    double     m_sample_rate = 0;          // Sample rate
+    Filter<int32_t>* m_filter      = nullptr;    // Filter model
+    Generator*        m_generator   = nullptr;    // Generator model
+    double            m_freq        = 0;          // Signal frequency
+    double            m_sample_rate = 0;          // Sample rate
 
 
     template<typename T> T Sign(T val){
@@ -29,9 +29,9 @@ class Receiver
         [in] freq        - frequency of signal
         [in] sample_rate - sample rate
     */
-    Receiver(double freq, double sample_rate) : m_freq(freq), m_sample_rate(sample_rate)
+    Receiver(double freq, double sample_rate, uint32_t filter_size) : m_freq(freq), m_sample_rate(sample_rate)
     {
-        m_filter    = new Filter(1.5 * m_freq, m_sample_rate);
+        m_filter    = new Filter<int32_t>(1.5 * m_freq, m_sample_rate, filter_size);
         m_generator = new Generator(m_freq, m_sample_rate);
     }
 
@@ -82,8 +82,8 @@ class Receiver
             double_temp_1[i] = temp_data[i] * data_in[i];
 
         // Filtering sin data
-        m_filter->Process(double_temp_1, double_temp_2);
-        
+        //m_filter->Process(double_temp_1, double_temp_2);
+
         for (uint64_t i = 0; i < size; ++i)
             data_out_1[i] = double_temp_2[i];
 
@@ -96,7 +96,7 @@ class Receiver
             double_temp_1[i] = temp_data[i] * data_in[i];
 
         // Filtering cos data
-        m_filter->Process(double_temp_1, double_temp_2);
+        //m_filter->Process(double_temp_1, double_temp_2);
 
         for (uint64_t i = 0; i < size; ++i)
             data_out_2[i] = double_temp_2[i];

@@ -33,7 +33,6 @@ return;
 int main()
 {
     std::vector<int16_t> data;          // Data from generator
-    std::vector<int16_t> filter_data;   // Filtered data from generator
     std::vector<int32_t> receive_data_1;// Data from channel 1 from receiver
     std::vector<int32_t> receive_data_2;// Data from channel 2 from receiver
     std::vector<double>  time_p;        // Time points data
@@ -41,32 +40,33 @@ int main()
     double   freq        = 110;         // Frequency of signal
     double   sample_rate = 1000;        // Sample rate of signal
     uint64_t N           = 1000;        // Number of points
+    uint32_t filter_size = 200;         // Size of window filter
     double   phase       = 0;           // Phase of generated signal in 
-    double   max_phase   = pi2;
-    int      num_steps = 100;
-    double   d_phase = max_phase / num_steps;
+    double   max_phase   = pi2;         // Maximum phase to research
+    int      num_steps   = 100;         // Number of points to research
+    double   d_phase     = max_phase / num_steps;
 
     data.resize(N);
-    filter_data.resize(N);
     time_p.resize(N);
-    
+
     for(uint64_t i = 0; i < N; ++i)
         time_p[i] = i;
 
-
     Generator gen(freq, sample_rate);
-    Receiver receiver(freq, sample_rate);
-    Filter filter(1.5 * freq, sample_rate);
+    Receiver receiver(freq, sample_rate, filter_size);
+    Filter<int32_t> filter(1.5 * freq, sample_rate, filter_size);
 
-    std::vector<double> filter_data_1(N);
-    std::vector<double> rect_1(N, 1);
-    std::vector<double> res(N);
-    filter.gen_filter(filter_data_1);
-    filter.convolution(rect_1, rect_1, res);
+    std::vector<int32_t> filter_data;
+    std::vector<int32_t> filter_ids(filter_size);
 
-    writeToFile(time_p, filter_data_1, "receive_data_1.txt");
-    writeToFile(time_p, res, "receive_data_2.txt");
+    for(uint32_t i = 0; i < filter_size; ++i)
+        filter_ids[i] = i;
 
+    filter.gen_filter(filter_data);
+
+    writeToFile(filter_ids, filter_data, "receive_data_1.txt");
+
+    /*
     std::vector<double> error_data;
     std::vector<double> error_ids(num_steps);
     std::vector<double> avg_error(num_steps, 0);
@@ -90,9 +90,9 @@ int main()
         phase += d_phase;
        /* if (fabs(avg_error[i]) < 0.1)
             std::cout << "Zero error phase: " << phase << ", error: " << avg_error[i] << ", i: " << i << std::endl;
-    */}
+    }
 
     writeToFile(error_ids, avg_error, "error_data.txt");
-
+    */
     return 0;
 }
