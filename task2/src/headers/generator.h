@@ -28,7 +28,7 @@ class Generator
     Generator(double freq = 110, double sample_rate = 1000): m_freq(freq), m_sample_rate(sample_rate){};
 
     // GenData - function for generating signal
-    void GenData(std::vector<int16_t>& out_data);
+    void GenData(std::vector<int32_t>& out_data);
 
     // SetPhase - function for setting phase value
     void SetPhase(double phase);
