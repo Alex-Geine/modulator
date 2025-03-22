@@ -15,7 +15,7 @@ const double pi2 = 4 * atan(1) * 2;
 // Class of signal generator
 class Generator
 {
-    private:
+    public:
 
     double m_phase       = 0;   // Initial phase
     double m_freq        = 0;   // Signal frequency
@@ -28,7 +28,7 @@ class Generator
     Generator(double freq = 110, double sample_rate = 1000): m_freq(freq), m_sample_rate(sample_rate){};
 
     // GenData - function for generating signal
-    void GenData(std::vector<int32_t>& out_data);
+    void GenData(std::vector<int64_t>& out_data);
 
     // SetPhase - function for setting phase value
     void SetPhase(double phase);

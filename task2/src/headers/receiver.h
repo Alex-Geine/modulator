@@ -9,7 +9,7 @@ class Receiver
 {
     private:
 
-    Filter<int32_t>* m_filter      = nullptr;    // Filter model
+    Filter<int64_t>*  m_filter      = nullptr;    // Filter model
     Generator*        m_generator   = nullptr;    // Generator model
     double            m_freq        = 0;          // Signal frequency
     double            m_sample_rate = 0;          // Sample rate
@@ -31,7 +31,7 @@ class Receiver
     */
     Receiver(double freq, double sample_rate, uint32_t filter_size) : m_freq(freq), m_sample_rate(sample_rate)
     {
-        m_filter    = new Filter<int32_t>(1.5 * m_freq, m_sample_rate, filter_size);
+        m_filter    = new Filter<int64_t>(1.5 * m_freq, m_sample_rate, filter_size);
         m_generator = new Generator(m_freq, m_sample_rate);
     }
 
@@ -64,14 +64,8 @@ class Receiver
 
         // Generate signals (sin/cos) to multyply with input data
         std::vector<DATA_TYPE> temp_data;
-        
-        // int16_t * int16_t != int16_t (we need to normalize data)
-        std::vector<OUT_DATA_TYPE> double_temp_1;   
-        std::vector<OUT_DATA_TYPE> double_temp_2;
 
         temp_data.resize(size);
-        double_temp_1.resize(size);
-        double_temp_2.resize(size);
 
         // Generate sin data
         m_generator->SetPhase(0.);
@@ -79,13 +73,10 @@ class Receiver
 
         // Multyply sin
         for (uint64_t i = 0; i < size; ++i)
-            double_temp_1[i] = temp_data[i] * data_in[i];
+            temp_data[i] *= data_in[i];
 
         // Filtering sin data
-        //m_filter->Process(double_temp_1, double_temp_2);
-
-        for (uint64_t i = 0; i < size; ++i)
-            data_out_1[i] = double_temp_2[i];
+        m_filter->Process(temp_data, data_out_1);
 
         // Generate cos data
         m_generator->SetPhase(pi2 / 4.);
@@ -93,13 +84,10 @@ class Receiver
 
         // Multyply cos
         for (uint64_t i = 0; i < size; ++i)
-            double_temp_1[i] = temp_data[i] * data_in[i];
+            temp_data[i] *= data_in[i];
 
         // Filtering cos data
-        //m_filter->Process(double_temp_1, double_temp_2);
-
-        for (uint64_t i = 0; i < size; ++i)
-            data_out_2[i] = double_temp_2[i];
+        m_filter->Process(temp_data, data_out_2);
 
         // QPSK receiver processing
         if (isQPSK)

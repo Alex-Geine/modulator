@@ -5,9 +5,9 @@
     [out] out_data - output data
     return void
 */
-void Generator::GenData(std::vector<int32_t>& out_data)
+void Generator::GenData(std::vector<int64_t>& out_data)
 {
-    uint32_t N = out_data.size();
+    uint64_t N = out_data.size();
     double d_phase = m_freq * pi2 / m_sample_rate;
 
     for(uint64_t i = 0; i < N; i++)
