@@ -13,6 +13,8 @@ class Receiver
     Generator*        m_generator   = nullptr;    // Generator model
     double            m_freq        = 0;          // Signal frequency
     double            m_sample_rate = 0;          // Sample rate
+    double            m_d_phase     = 0;          // phase correction signal
+    double            m_koeff       = 0.1;        // error phasr koeff
 
 
     template<typename T> T Sign(T val){
@@ -52,7 +54,7 @@ class Receiver
         return void
     */
     template<typename DATA_TYPE, typename OUT_DATA_TYPE>
-    void Process(const std::vector<DATA_TYPE>& data_in, std::vector<OUT_DATA_TYPE>& data_out_1, std::vector<OUT_DATA_TYPE>& data_out_2, bool isQPSK = false)
+    void Process(const std::vector<DATA_TYPE>& data_in, std::vector<OUT_DATA_TYPE>& data_out_1, std::vector<OUT_DATA_TYPE>& data_out_2, double& error, bool isQPSK = false)
     {
         uint64_t size = data_in.size();
 
@@ -63,12 +65,10 @@ class Receiver
         data_out_2.resize(size);
 
         // Generate signals (sin/cos) to multyply with input data
-        std::vector<DATA_TYPE> temp_data;
-
-        temp_data.resize(size);
+        std::vector<DATA_TYPE> temp_data(size);
 
         // Generate sin data
-        m_generator->SetPhase(0.);
+        m_generator->SetPhase(0. + m_d_phase);
         m_generator->GenData(temp_data);
 
         // Multyply sin
@@ -89,21 +89,33 @@ class Receiver
         // Filtering cos data
         m_filter->Process(temp_data, data_out_2);
 
+        // std::vector<int> time_p(size);
+        // for (auto i = 0; i < size; ++i)
+            // time_p[i] = i;
+
+
+        // Its error detecting fucntion
         // QPSK receiver processing
+
+        
         if (isQPSK)
         {
-            OUT_DATA_TYPE temp;
-            for (uint64_t i = 0; i < data_out_1.size(); ++i)
-            {
-                // branch 1
-                temp = data_out_1[i];
-                data_out_1[i] *= Sign<OUT_DATA_TYPE>(data_out_2[i]);
+            OUT_DATA_TYPE error_phase;
+            for (uint64_t i = 0; i < data_out_1.size(); ++i){
 
-                // branch 2
-                data_out_2[i] *= Sign<OUT_DATA_TYPE>(temp);
+                error_phase +=  data_out_1[i] * Sign<OUT_DATA_TYPE>(data_out_2[i]) - data_out_2[i] * Sign<OUT_DATA_TYPE>(data_out_1[i]);
+                //std::cout << "error_phase: " << error_phase << std::endl;
             }
-        }
+            std::cout << "first: " << data_out_1[0] * Sign<OUT_DATA_TYPE>(data_out_2[0]) << ", second: " << data_out_2[0] * Sign<OUT_DATA_TYPE>(data_out_1[0]) << std::endl;
 
+            m_d_phase = (double)error_phase / data_out_1.size() / AMPL / AMPL * m_koeff;
+
+            std::cout << "m_phase: " << m_d_phase << ", error_phase: " << error_phase << ", data_size: " << data_out_1.size() << ", ampl: " << AMPL << ", koef: " << m_koeff << std::endl;
+
+            error = m_d_phase;
+        }
+        
+        
         return;
     }
 };

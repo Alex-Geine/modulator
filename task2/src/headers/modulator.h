@@ -42,7 +42,7 @@ class Modulator : public Generator
             {
                 int64_t I = (info_bits[i] ? 1 : -1);
                 int64_t Q = (info_bits[i + 1] ? 1 : -1);
-                std::cout << "I: " << I << ", Q: " << Q << std::endl;
+                //std::cout << "I: " << I << ", Q: " << Q << std::endl;
                 // I component
                 for (uint64_t j = 0; j < info_bits_period * 2; ++j)
                 {

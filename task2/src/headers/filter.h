@@ -109,7 +109,7 @@ class Filter
                 data_out[i] += m_filter_data_sample[i + j] * m_filter_data[j];
                 //std::cout << "data: " << m_filter_data_sample[i+j] << ", filt: " << m_filter_data[j] << ", mult: " <<  m_filter_data_sample[i + j] * m_filter_data[j] << ", res: " << data_out[i] << std::endl;
             }
-            data_out[i] /= m_filter_size;
+            data_out[i] /= m_filter_size * AMPL_SIG;
         }
 
         return;

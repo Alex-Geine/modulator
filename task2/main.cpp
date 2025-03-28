@@ -60,7 +60,7 @@ int main()
     //Filter<int64_t> filter(1.5 * freq, sample_rate, filter_size);
 
 
-    std::vector<uint8_t> info_bits{1,0,1,0,1,0,1,0,1,0};
+    std::vector<uint8_t> info_bits{1,1, 0,0, 1,0, 0,1, 1,1};
     mod.GenData(info_bits, data);
     mod.SetModType(isFM2);
 
@@ -69,7 +69,16 @@ int main()
     //    std::cout << it << " ";
     //
     // std::cout << std::endl;
-    writeToFile(time_p, data, "gen_data.txt");
+    // writeToFile(time_p, data, "gen_data.txt");
+
+    //mod.SetPhase(phase + d_phase * 20);
+    //mod.GenData(info_bits, data);
+
+    // Receive data
+    //double error;
+    //receiver.Process(data, receive_data_1, receive_data_2, error, !isFM2);
+    //writeToFile(time_p, receive_data_1, "receive_data_1.txt");
+    //writeToFile(time_p, receive_data_2, "receive_data_2.txt");
     /*
     FilterDataSample<int64_t> sample;
     sample.getSignalData(&data);
@@ -137,6 +146,13 @@ int main()
     std::vector<double> error_ids(num_steps);
     std::vector<double> avg_error(num_steps, 0);
 
+    std::vector<int64_t> I(num_steps * info_bits.size() / 2);
+    std::vector<int64_t> Q(num_steps * info_bits.size() / 2);
+
+    uint32_t symbol_size = info_bits.size() / 2;
+    uint32_t symbol_rate = N / symbol_size;
+
+    double error;
     for (int i = 0; i < num_steps; ++i)
     {
         error_ids[i] = phase;
@@ -145,23 +161,30 @@ int main()
         mod.GenData(info_bits, data);
 
         // Receive data
-        receiver.Process(data, receive_data_1, receive_data_2, !isFM2);
+        receiver.Process(data, receive_data_1, receive_data_2, error, !isFM2);
 
-        g_error_processorQPSK(receive_data_1, receive_data_2, error_data);
+        std::cout << "i: " << i << ", error: " << error << std::endl;
 
-        for(auto&item:error_data)
-            avg_error[i] += item;
-        avg_error[i] /= error_data.size();
+        //g_error_processorQPSK(receive_data_1, receive_data_2, error_data);
+
+        // for(auto&item:error_data)
+            // avg_error[i] += item;
+        // avg_error[i] /= error_data.size();
 
         phase += d_phase;
-       /* if (fabs(avg_error[i]) < 0.1)
-            std::cout << "Zero error phase: " << phase << ", error: " << avg_error[i] << ", i: " << i << std::endl;
-            */
+
+        for (uint32_t j = 0; j < symbol_size; ++j)
+        {
+            I[j + i * symbol_size] = receive_data_1[j * symbol_rate + 2];
+            Q[j + i * symbol_size] = receive_data_2[j * symbol_rate + 2];
+        }
     }
 
     writeToFile(time_p, receive_data_1, "receive_data_1.txt");
     writeToFile(time_p, receive_data_2, "receive_data_2.txt");
-    writeToFile(error_ids, avg_error, "error_data.txt");
+    writeToFile(I, Q, "constellation_diagram.txt");
+    
+    
     
     return 0;
 }
